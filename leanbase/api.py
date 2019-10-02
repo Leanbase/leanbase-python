@@ -1,7 +1,7 @@
 from leanbase import exceptions
 from leanbase.models.config import build_config
 from leanbase.client import LBClient
-from leanbase.storage import SegmentStore
+from leanbase.storage import SegmentStore, FeatureStore
 
 _configuration = None
 _client = None
@@ -35,7 +35,7 @@ def configure(api_key=None, **kwargs):
     _client = LBClient(
         config=_configuration,
         segment_store=SegmentStore(),
-        feature_store=None
+        feature_store=FeatureStore(),
     )
 
 def await_initialisation(timeout=1.0):
