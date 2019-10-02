@@ -4,7 +4,7 @@ import logging
 from leanbase.exceptions import BadConfigurationException
 from leanbase.models.config import LBClientConfig
 from leanbase.storage.inmemory import SegmentStore, FeatureStore
-from leanbase.tasks.workers import SegmentSyncWorker, ConveyEventsWorker
+from leanbase.tasks.workers import FeatureSyncWorker, SegmentSyncWorker, ConveyEventsWorker
 
 
 class LBClient(object):
@@ -32,6 +32,11 @@ class LBClient(object):
         segment_sync_t = threading.Thread(name='segment-sync', target=t.start)
         segment_sync_t.start()
         threads.append(segment_sync_t)
+
+        t = FeatureSyncWorker(self._config, self._feature_store)
+        feature_sync_t = threading.Thread(name='feature-sync', target=t.start)
+        feature_sync_t.start()
+        threads.append(feature_sync_t)
 
         t = ConveyEventsWorker(self._config)
         convey_events_t = threading.Thread(name='convey-sse', target=t.start)

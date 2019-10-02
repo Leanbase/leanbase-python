@@ -6,7 +6,7 @@ import json
 from leanbase.models.config import LBClientConfig
 
 def process_sse(event):
-    return json.loads(event)
+    return json.loads(event.data)
 
 class SSEMessageSource(six.Iterator):
     def __init__(self, config:LBClientConfig=None):
