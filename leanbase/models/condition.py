@@ -1,6 +1,7 @@
 import typing
 import math
 import enum
+import re
 
 class Kinds(enum.Enum):
     NUMERIC = 'numeric'
@@ -23,9 +24,20 @@ class Operators(enum.Enum):
     STRTWITH = 'Starts with'
     ENDSWITH = 'Ends with'
     MATCHES  = 'Matches (regex)'
+    CONTAINS  = 'Contains'
 
 TRUISH = ('True', 'true', '1', 'yes', 'Yes')
 FLOAT_TOLERANCE = 10e-4
+
+O = Operators
+
+OperatorMapping = {
+    Kinds.NUMERIC: [O.GTE, O.LTE, O.GT, O.LT, O.EQUALS, O.DNEQUAL],
+    Kinds.BOOLEAN: [O.IS, O.ISNOT],
+    Kinds.DATE   : [O.IS, O.ISNOT, O.GT, O.LT],
+    Kinds.STRING : [O.EQUALS, O.DNEQUAL, O.STRTWITH, O.ENDSWITH, O.MATCHES, O.CONTAINS]
+}
+
 
 class Condition(object):
     def __init__(self, kind, attribute_key, operator, value):
@@ -79,5 +91,7 @@ class Condition(object):
                 value = int(value)
         elif kind == Kinds.DATE:
             pass # TODO figure out date serialization mechanics
+        elif operator == Operators.MATCHES:
+            value = re.compile(value)
         
         return cls(kind, attr_key, operator, value)
