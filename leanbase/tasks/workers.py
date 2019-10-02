@@ -9,6 +9,8 @@ from leanbase.models.config import LBClientConfig
 SEGMENT_Q = queue.Queue()
 FEATURE_Q = queue.Queue()
 
+ALL_INIT_DONE = tuple([1,0,0])
+
 class FeatureSyncWorker(object):
     def __init__(
             self,
@@ -31,7 +33,8 @@ class FeatureSyncWorker(object):
     def initialize(self):
         for feature_id in lbconvey.list_all_features(self.config.team_id):
             FEATURE_Q.put(feature_id)
-        self._init_event.set()
+
+        FEATURE_Q.put(ALL_INIT_DONE)
         self.main_loop()
 
     def main_loop(self):
@@ -41,7 +44,10 @@ class FeatureSyncWorker(object):
             
             try:
                 updated_id = FEATURE_Q.get(True, 1)
-                self._update_feature(feature_id=updated_id)
+                if updated_id == ALL_INIT_DONE:
+                    self._init_event.set()
+                else:
+                    self._update_feature(feature_id=updated_id)
             except queue.Empty:
                 pass
 
