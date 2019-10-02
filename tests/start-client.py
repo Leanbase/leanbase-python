@@ -13,3 +13,7 @@ leanbase.configure(
 )
 
 leanbase.await_initialisation(1.0)
+logging.info("ZZ")
+logging.info(leanbase.user({'user.email': 'funda@gmail.com'}).can_access('4VLJOnp'))
+logging.info("OO")
+logging.info(leanbase.user({'user.email': 'funda@puls.com'}).can_access('4VLJOnp'))

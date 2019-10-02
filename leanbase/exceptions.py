@@ -7,3 +7,7 @@ class BadConfigurationException(LeanbaseException):
 
 class ReconfigurationException(LeanbaseException):
     pass
+
+class NotConfiguredException(LeanbaseException):
+    def __init__(self):
+        self.message = 'leanbase.configure() must be called before leanbase.user()'

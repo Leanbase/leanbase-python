@@ -4,7 +4,7 @@ from leanbase.models.feature import FeatureDefinition, FeatureGlobalStatus
 from leanbase.models.segment import SegmentDefinition, ConditionJoinOperator
 from leanbase.models.condition import Condition, OperatorMapping, O
 
-def evaluate(user_attributes:typing.Dict, feature_definition:FeatureStatus, segment_definition:SegmentDefinition):
+def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition, segment_definition:SegmentDefinition=None):
     """ Evaluate whether a user with given attributes has access to a feature.
     Right now, multi-variate configuration is not supported, so boolean would 
     suffice.

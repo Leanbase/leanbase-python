@@ -1,7 +1,9 @@
 from threading import Event
+import typing
 
 from leanbase import exceptions
 from leanbase.models.config import build_config
+from leanbase.models.user import User
 from leanbase.client import LBClient
 from leanbase.storage import SegmentStore, FeatureStore
 
@@ -46,5 +48,9 @@ def configure(api_key=None, **kwargs):
 def await_initialisation(timeout=1.0):
     _ready_event.wait(timeout)
 
-def user(user_ref):
-    pass
+def user(user_attributes:typing.Dict):
+    global _client
+    if not _client:
+        raise exceptions.NotConfiguredException
+
+    return User(user_attributes, _client._feature_store, _client._segment_store)
