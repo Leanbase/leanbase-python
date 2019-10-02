@@ -26,13 +26,14 @@ def get_staff_segment_definition(team_id:str)->SegmentDefinition:
     )
 
 def list_all_features(team_id:str)->typing.List[str]:
-    return _make_request('v1/reply/teams/{}/features'.format(team_id)).json()['features']
+    return _make_request('v1/reply/teams/{}/features/'.format(team_id)).json()['features']
 
 def get_feature_status(team_id:str, feature_id:str)->FeatureDefinition:
-    response = _make_request('v1/reply/teams/{}/features/{}'.format(team_id, feature_id)).json()
-    return FeatureDefinition.from_encoding(
-        gs=response.get('gs'),
-        _id=response.get('id'),
-        es=response.get('es', []),
-        ss=response.get('ss', [])
-    )
+    response = _make_request('v1/reply/teams/{}/features/{}/'.format(team_id, feature_id)).json()
+    if response:
+        return FeatureDefinition.from_encoding(
+            gs=response.get('gs'),
+            _id=response.get('id'),
+            es=response.get('es', []),
+            ss=response.get('ss', [])
+        )
