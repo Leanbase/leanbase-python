@@ -10,10 +10,16 @@ SEGMENT_Q = queue.Queue()
 FEATURE_Q = queue.Queue()
 
 class FeatureSyncWorker(object):
-    def __init__(self, config:LBClientConfig, feature_store:FeatureStore):
+    def __init__(
+            self,
+            config:LBClientConfig,
+            feature_store:FeatureStore,
+            init_event:threading.Event=None
+        ):
         self.config = config
         self.feature_store = feature_store
         self._should_stop = False
+        self._init_event = init_event
 
     def start(self):
         logging.info('Thread<%s> Started', threading.current_thread().getName())
@@ -25,6 +31,7 @@ class FeatureSyncWorker(object):
     def initialize(self):
         for feature_id in lbconvey.list_all_features(self.config.team_id):
             FEATURE_Q.put(feature_id)
+        self._init_event.set()
         self.main_loop()
 
     def main_loop(self):
@@ -47,10 +54,16 @@ class FeatureSyncWorker(object):
             logging.debug('Updated feature status for id: %s', feature_id)
 
 class SegmentSyncWorker(object):
-    def __init__(self, config:LBClientConfig, segment_store:SegmentStore):
+    def __init__(
+            self,
+            config:LBClientConfig,
+            segment_store:SegmentStore,
+            init_event:threading.Event=None
+        ):
         self.config = config
         self.segment_store = segment_store
         self._should_stop = False
+        self._init_event = init_event
 
     def start(self):
         logging.info('Thread<%s> Started', threading.currentThread().getName())
@@ -62,6 +75,7 @@ class SegmentSyncWorker(object):
     def initialize(self):
         self._update_segment('$STAFF')
         logging.info('Populated staff segment definition')
+        self._init_event.set()
         self.main_loop()
 
     def main_loop(self):

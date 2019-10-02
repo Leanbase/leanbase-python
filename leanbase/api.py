@@ -1,3 +1,5 @@
+from threading import Event
+
 from leanbase import exceptions
 from leanbase.models.config import build_config
 from leanbase.client import LBClient
@@ -5,6 +7,8 @@ from leanbase.storage import SegmentStore, FeatureStore
 
 _configuration = None
 _client = None
+
+_ready_event = Event()
 
 def configure(api_key=None, **kwargs):
     """ Configure the leanbase client. Within a runtime, this should only be
@@ -26,7 +30,7 @@ def configure(api_key=None, **kwargs):
 
     :rtype: None
     """
-    global _configuration, _client
+    global _configuration, _client, _ready_event
     if not _configuration == None:
         raise exceptions.ReconfigurationException
     
@@ -36,10 +40,11 @@ def configure(api_key=None, **kwargs):
         config=_configuration,
         segment_store=SegmentStore(),
         feature_store=FeatureStore(),
+        ready_event=_ready_event,
     )
 
 def await_initialisation(timeout=1.0):
-    pass
+    _ready_event.wait(timeout)
 
 def user(user_ref):
     pass

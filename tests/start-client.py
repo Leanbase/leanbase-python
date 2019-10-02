@@ -11,3 +11,5 @@ leanbase.configure(
     team_id="5qgZJg1",
     convey_host="http://localhost:9001/",
 )
+
+leanbase.await_initialisation(1.0)
