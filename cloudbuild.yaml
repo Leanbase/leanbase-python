@@ -2,5 +2,5 @@ steps:
   - name: 'python:3.6'
     entrypoint: pip
     args: ['install', '-r', 'requirements.txt']
-  - name: 'gcr.io/$PROJECT_ID/pypi-tools:3.6',
+  - name: 'gcr.io/$PROJECT_ID/pypi-tools:3.6'
     args: ['twine', 'upload', 'dist/*']
