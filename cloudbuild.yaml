@@ -4,4 +4,4 @@ steps:
     args: ['install', '-r', 'requirements.txt']
   - name: 'gcr.io/$PROJECT_ID/pypi-tools:3.6'
     entrypoint: 'twine'
-    args: ['upload', 'dist/*']
+    args: ['-u', '${_PYPI_USERNAME}', '-p', '${_PYPI_PASSWORD}', 'upload', 'dist/*']
