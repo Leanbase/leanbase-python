@@ -3,9 +3,11 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+print(long_description)
+
 setuptools.setup(
     name="leanbase",
-    version="0.0.1",
+    version="1.0.0",
     author="Dipanjan Mukherjee",
     author_email="dipanjan@leanbase.io",
     description="A client for the leanbase API.",

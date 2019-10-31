@@ -10,6 +10,9 @@ from leanbase.api import configure, await_initialisation, user
 
 await_initialization = await_initialisation
 
+# Version of the leanbase package
+__version__ = "1.0.0"
+
 __all__ = [
     'configure',
     'await_initialisation',

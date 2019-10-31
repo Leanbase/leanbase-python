@@ -1,0 +1,7 @@
+steps:
+  - name: 'python:3.6'
+    entrypoint: pip
+    args: ['install', '-r', 'requirements.txt']
+  - name: 'python:3.6'
+    entrypoint: twine
+    args: ['upload', 'dist/leanbase-1.0.0-py3-none-any.whl']
