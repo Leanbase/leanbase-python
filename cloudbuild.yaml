@@ -3,5 +3,8 @@ steps:
     entrypoint: pip
     args: ['install', '-r', 'requirements.txt']
   - name: 'gcr.io/$PROJECT_ID/pypi-tools:3.6'
+    entrypoint: 'python'
+    args: ['setup.py', 'sdist', 'bdist_wheel']
+  - name: 'gcr.io/$PROJECT_ID/pypi-tools:3.6'
     entrypoint: 'twine'
     args: ['upload', 'dist/*', '-u', '${_PYPI_USERNAME}', '-p', '${_PYPI_PASSWORD}']
