@@ -1,6 +1,6 @@
 # leanbase-python
 
-A client for the Leanbase API in python.
+A client for the [Leanbase](https://leanbase.io/) API in python.
 
 ## Usage
 
