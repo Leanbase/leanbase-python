@@ -4,7 +4,7 @@ from leanbase.models.feature import FeatureDefinition, FeatureGlobalStatus
 from leanbase.models.segment import SegmentDefinition, ConditionJoinOperator
 from leanbase.models.condition import Condition, OperatorMapping, O
 
-def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition, segment_definition:SegmentDefinition=None):
+def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition):
     """ Evaluate whether a user with given attributes has access to a feature.
     Right now, multi-variate configuration is not supported, so boolean would 
     suffice.
@@ -16,13 +16,10 @@ def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition, 
     :param feature_definition: the feature to evaluate against
     :type feature_definition: FeatureDefinition
 
-    :param segment_definition: optional segment definition.
-    :type segment_definition: SegmentDefinition
-
     :return: Access status true/false for the feature key and user attributes.
     :rtype: bool
     """
-    if feature_definition.global_status == FeatureGlobalStatus.ON:
+    if feature_definition.global_status == FeatureGlobalStatus.GA:
         # Implies global access. Including staff and everyone else.
         return True
 
@@ -40,13 +37,13 @@ def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition, 
     return False
 
 def _user_matches_segment(user_attributes:typing.Dict, segment_definition:SegmentDefinition)->bool:
-    if self.operator == ConditionJoinOperator.OR:
+    if segment_definition.operator == ConditionJoinOperator.OR:
         return any(
-            map(lambda c: _user_matches_condition(user_attributes, c), self.conditions)
+            map(lambda c: _user_matches_condition(user_attributes, c), segment_definition.conditions)
         )
     else:
         return all(
-            map(lambda c: _user_matches_condition(user_attributes, c), self.conditions)
+            map(lambda c: _user_matches_condition(user_attributes, c), segment_definition.conditions)
         )
 
 def _user_matches_condition(user_attributes:typing.Dict, condition:Condition)->bool:
@@ -72,7 +69,7 @@ def _user_matches_condition(user_attributes:typing.Dict, condition:Condition)->b
         return True
 
     op = condition.operator
-    uv = user[condition.attribute_key]
+    uv = user_attributes[condition.attribute_key]
     va = condition.value
     if op == O.GTE:
         return uv >= va

@@ -5,11 +5,14 @@ from .condition import Condition
 
 
 class FeatureGlobalStatus(enum.Enum):
-    """ Describes the global status of a feature. If the global status is 
-    FeatureGlobalStatus.OFF, the evaluation can be short circuited. A status of
-    OFF implies that the kill-switch is engaged. """
-    ON = 'on'
-    OFF = 'off'
+    """ Describes the global status of a feature. Can be either of 
+    (DEV, STAFF, PARTIAL, GA). With GA, we can short circuit the evaluation. At
+    STAFF, we must compare to the Staff segment. With Partial, we use the hashed
+    arithmetic. """
+    DEV = 'dev'
+    STAFF = 'staff'
+    PARTIAL = 'partial'
+    GA = 'ga'
 
 
 class FeatureDefinition(object):
@@ -36,7 +39,15 @@ class FeatureDefinition(object):
             es:typing.List[typing.Dict]=[],
             ss:typing.List[typing.Dict]=[]
         ):
-        global_status = gs == 'ON' and FeatureGlobalStatus.ON or FeatureGlobalStatus.OFF
+        if gs == 'dev':
+            global_status = FeatureGlobalStatus.DEV
+        elif gs == 'staff':
+            global_status = FeatureGlobalStatus.STAFF
+        elif gs == 'partial':
+            global_status = FeatureGlobalStatus.PARTIAL
+        else:
+            global_status = FeatureGlobalStatus.GA
+
         return cls(
             _id, global_status,
             enabled_for_segments=list(map(Condition.from_encoding, es)),
