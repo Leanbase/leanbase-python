@@ -26,4 +26,9 @@ class SSEMessageSource(six.Iterator):
         return urlunparse((parts.scheme, parts.netloc, path, parts.params, parts.query, parts.fragment))
         
     def __iter__(self):
-        return map(process_sse, self._client)
+        return map(process_sse, 
+            filter(
+                lambda ev: ev.event == 'update',
+                self._client
+            )
+        )
