@@ -24,12 +24,14 @@ class FeatureDefinition(object):
         _id, 
         global_status,
         enabled_for_segments=[],
-        suppressed_for_segments=[]
+        suppressed_for_segments=[],
+        rollout_percentage=None,
     ):
         self.id = _id
         self.global_status = global_status
         self.enabled_for_segments = enabled_for_segments
         self.suppressed_for_segments = suppressed_for_segments
+        self.rollout_percentage = rollout_percentage
 
     @classmethod
     def from_encoding(
@@ -37,7 +39,8 @@ class FeatureDefinition(object):
             gs:str=None,
             _id:str=None,
             es:typing.List[typing.Dict]=[],
-            ss:typing.List[typing.Dict]=[]
+            ss:typing.List[typing.Dict]=[],
+            rp:int=None,
         ):
         if gs == 'dev':
             global_status = FeatureGlobalStatus.DEV
@@ -51,5 +54,6 @@ class FeatureDefinition(object):
         return cls(
             _id, global_status,
             enabled_for_segments=list(map(Condition.from_encoding, es)),
-            suppressed_for_segments=list(map(Condition.from_encoding, ss))
+            suppressed_for_segments=list(map(Condition.from_encoding, ss)),
+            rollout_percentage=rp
         )
