@@ -1,4 +1,6 @@
+import sys
 import unittest
+import logging
 
 from leanbase.storage import FeatureStore, SegmentStore
 from leanbase.models.user import User
@@ -6,6 +8,9 @@ from leanbase.models.feature import FeatureDefinition, FeatureGlobalStatus
 from leanbase.models.segment import SegmentDefinition
 from leanbase.models.condition import Condition, Kinds, Operators
 from leanbase.evaluate import evaluate
+
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 f_store = FeatureStore()
 s_store = SegmentStore()
@@ -23,6 +28,8 @@ f_store.set_feature(staff_feature.id, staff_feature)
 ga_feature = FeatureDefinition('FGHJF', FeatureGlobalStatus.GA)
 f_store.set_feature(ga_feature.id, ga_feature)
 
+partial_feature = FeatureDefinition('GFGFNBG', FeatureGlobalStatus.PARTIAL, rollout_percentage=10)
+f_store.set_feature(partial_feature.id, partial_feature)
 
 regular_user_attr = {'email': 'email@gmail.com', 'incarceration_count': 20}
 staff_user_attr = {'email': 'email@leanbase.io'}
@@ -60,3 +67,24 @@ class EvaluateTestCase(unittest.TestCase):
             ga_feature
         )
         self.assertEqual(True, result)
+
+    def test_evaluate_partial(self):
+        from tests import fixtures
+        truthy = 0
+        falsy = 0
+        for email in fixtures.random_emails(10000):
+            regular_user_attr.update({ 'email': email })
+            result = evaluate(
+                regular_user_attr,
+                partial_feature
+            )
+            if result:
+                truthy = truthy + 1
+            else:
+                falsy = falsy + 1
+
+        logger.info("After going through %d records," %(truthy + falsy))
+        logger.info(" %d %% items were selected.", 100 * truthy / (truthy + falsy))
+        logger.info(" %d %% was the rollout_percentage." %(partial_feature.rollout_percentage))
+
+        self.assertAlmostEqual(truthy / (truthy + falsy) * 100, partial_feature.rollout_percentage, delta=0.5)

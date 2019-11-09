@@ -1,8 +1,12 @@
 import typing
+import codecs
+import hashlib
 
 from leanbase.models.feature import FeatureDefinition, FeatureGlobalStatus
 from leanbase.models.segment import SegmentDefinition, ConditionJoinOperator
 from leanbase.models.condition import Condition, OperatorMapping, O
+
+__NORMALIZING_DIVISOR__ = float(0xFFFFFFFFFFFFFFF)
 
 def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition):
     """ Evaluate whether a user with given attributes has access to a feature.
@@ -32,6 +36,21 @@ def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition):
     for segment in feature_definition.suppressed_for_segments:
         if _user_matches_segment(user_attributes, segment):
             return False
+
+    # If partial feature, try THE algorithm
+    if feature_definition.global_status == FeatureGlobalStatus.PARTIAL:
+        user_identifier = user_attributes.get('user_id', user_attributes.get('id', user_attributes.get('email')))
+        cleartext = feature_definition.id + '-' + user_identifier
+        _hash = hashlib.sha1(codecs.encode(cleartext)).hexdigest()
+
+        # Normalize cleartext into a fraction. Take the first 15 hexcharacters
+        # and divide by the largest possible such hexnumber (__NORMALIZING_DIVISOR__)
+        user_normalized_value = int(_hash[:15], base=16) / __NORMALIZING_DIVISOR__
+
+        # Rollout_percentage from the servers will be at a 100 scale, so normalize,
+        # compare, make a boolean and return.
+        return user_normalized_value <= (feature_definition.rollout_percentage / 100)
+
 
     # Could not find a segment where it is enabled or disabled, return False.
     return False
