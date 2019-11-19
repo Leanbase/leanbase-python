@@ -1,7 +1,7 @@
 steps:
   - name: 'python:3.6'
     entrypoint: pip
-    args: ['install', '-r', 'requirements.txt']
+    args: ['install', '.[test]']
   - name: 'gcr.io/$PROJECT_ID/pypi-tools:3.6'
     entrypoint: 'python'
     args: ['setup.py', 'sdist', 'bdist_wheel']
