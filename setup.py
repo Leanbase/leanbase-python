@@ -4,9 +4,10 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
-TEST_REQUIRES = [
+DEV_REQUIRES = [
     "nose==1.3.7",
     "twine==1.13.0",
+    "bumpversion==0.5.3",
 ]
 
 setuptools.setup(
@@ -23,8 +24,8 @@ setuptools.setup(
         "six==1.12.0",
         "sseclient==0.0.24",
     ],
-    tests_require=TEST_REQUIRES,
-    extras_require={'test': TEST_REQUIRES},
+    tests_require=DEV_REQUIRES,
+    extras_require={'test': DEV_REQUIRES},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
