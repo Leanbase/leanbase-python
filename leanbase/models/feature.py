@@ -1,7 +1,7 @@
 import typing
 import enum
 
-from .condition import Condition
+from .segment import SegmentDefinition
 
 
 class FeatureGlobalStatus(enum.Enum):
@@ -37,7 +37,7 @@ class FeatureDefinition(object):
     def from_encoding(
             cls,
             gs:str=None,
-            _id:str=None,
+            id:str=None,
             es:typing.List[typing.Dict]=[],
             ss:typing.List[typing.Dict]=[],
             rp:int=None,
@@ -52,8 +52,8 @@ class FeatureDefinition(object):
             global_status = FeatureGlobalStatus.GA
 
         return cls(
-            _id, global_status,
-            enabled_for_segments=list(map(Condition.from_encoding, es)),
-            suppressed_for_segments=list(map(Condition.from_encoding, ss)),
+            id, global_status,
+            enabled_for_segments=list(map(lambda seg_def: SegmentDefinition.from_encoding(**seg_def), es)),
+            suppressed_for_segments=list(map(lambda seg_def: SegmentDefinition.from_encoding(**seg_def), ss)),
             rollout_percentage=rp
         )

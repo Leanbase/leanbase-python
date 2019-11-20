@@ -48,8 +48,8 @@ class Condition(object):
 
 
     @classmethod
-    def from_encoding(cls, mc:typing.Tuple[str, str, str, str]):
-        kind_rep, attr_key, operator_rep, value = mc
+    def from_encoding(cls, condition:typing.Tuple[str, str, str, str]):
+        kind_rep, attr_key, operator_rep, value = condition
         
         if kind_rep == 'BOOLEAN':
             kind = Kinds.BOOLEAN
