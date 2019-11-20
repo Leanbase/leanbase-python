@@ -3,7 +3,7 @@ import codecs
 import hashlib
 
 from leanbase.models.feature import FeatureDefinition, FeatureGlobalStatus
-from leanbase.models.segment import SegmentDefinition, ConditionJoinOperator
+from leanbase.models.segment import SegmentDefinition, ConditionCombinator
 from leanbase.models.condition import Condition, OperatorMapping, O
 
 __NORMALIZING_DIVISOR__ = float(0xFFFFFFFFFFFFFFF)
@@ -56,7 +56,7 @@ def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition):
     return False
 
 def _user_matches_segment(user_attributes:typing.Dict, segment_definition:SegmentDefinition)->bool:
-    if segment_definition.operator == ConditionJoinOperator.OR:
+    if segment_definition.combinator == ConditionCombinator.OR:
         return any(
             map(lambda c: _user_matches_condition(user_attributes, c), segment_definition.conditions)
         )

@@ -5,7 +5,7 @@ from six.moves.urllib.parse import urljoin, urlparse, urlencode, urlunparse
 from leanbase import api
 from leanbase.models.condition import Condition
 from leanbase.models.feature import FeatureDefinition
-from leanbase.models.segment import SegmentDefinition, ConditionJoinOperator
+from leanbase.models.segment import SegmentDefinition, ConditionCombinator
 
 API_KEY = lambda: api._configuration.api_key
 CONVEY_HOST = lambda: api._configuration.convey_host
@@ -22,7 +22,7 @@ def get_staff_segment_definition(team_id:str)->SegmentDefinition:
     response = _make_request('v1/reply/teams/{}/staff-segment'.format(team_id)).json()
     return SegmentDefinition(
         conditions=list(map(Condition.from_encoding, response['mc'])),
-        operator=response['op'] == 'OR' and ConditionJoinOperator.OR or ConditionJoinOperator.AND,
+        combinator=response['cmb'] == 'OR' and ConditionCombinator.OR or ConditionCombinator.AND,
     )
 
 def list_all_features(team_id:str)->typing.List[str]:
