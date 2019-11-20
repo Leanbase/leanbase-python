@@ -17,12 +17,11 @@ s_store = SegmentStore()
 
 staff_condition = Condition(Kinds.STRING, 'email', Operators.ENDSWITH, 'leanbase.io')
 staff_segment = SegmentDefinition(conditions=[staff_condition])
-s_store.set_segment('staff', staff_segment)
 
 indev_feature = FeatureDefinition('NByQa', FeatureGlobalStatus.DEV)
 f_store.set_feature(indev_feature.id, indev_feature)
 
-staff_feature = FeatureDefinition('QUYRT', FeatureGlobalStatus.STAFF, enabled_for_segments=[staff_segment])
+staff_feature = FeatureDefinition('QUYRT', FeatureGlobalStatus.STAFF)
 f_store.set_feature(staff_feature.id, staff_feature)
 
 ga_feature = FeatureDefinition('FGHJF', FeatureGlobalStatus.GA)
@@ -55,6 +54,7 @@ class EvaluateTestCase(unittest.TestCase):
         result = evaluate(
             staff_user_attr,
             staff_feature,
+            staff_segment_defintion=staff_segment
         )
         self.assertEqual(True, result)
 

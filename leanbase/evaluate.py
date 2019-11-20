@@ -8,7 +8,7 @@ from leanbase.models.condition import Condition, OperatorMapping, O
 
 __NORMALIZING_DIVISOR__ = float(0xFFFFFFFFFFFFFFF)
 
-def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition):
+def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition, staff_segment_defintion:SegmentDefinition=None):
     """ Evaluate whether a user with given attributes has access to a feature.
     Right now, multi-variate configuration is not supported, so boolean would 
     suffice.
@@ -20,12 +20,23 @@ def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition):
     :param feature_definition: the feature to evaluate against
     :type feature_definition: FeatureDefinition
 
+    :param staff_segment_definition: staff segment definition if applicable
+    :type staff_segment_definition: SegmentDefinition
+
     :return: Access status true/false for the feature key and user attributes.
     :rtype: bool
     """
     if feature_definition.global_status == FeatureGlobalStatus.GA:
         # Implies global access. Including staff and everyone else.
         return True
+
+    if feature_definition.global_status == FeatureGlobalStatus.STAFF and staff_segment_defintion:
+        # Check whether user is staff. Only check if staff_segment_definition has
+        if _user_matches_segment(user_attributes, staff_segment_defintion):
+            return True
+        # If a user does not match staff, and the global_status is staff, the
+        # user could still have access via enabled_segments, so proceed with
+        # it. No short-circuit return here.
 
     # Otherwise, fall back to checking each segment to figure out whether this
     # feature is available to them. Enable takes precedence over suppressing.
@@ -51,8 +62,7 @@ def evaluate(user_attributes:typing.Dict, feature_definition:FeatureDefinition):
         # compare, make a boolean and return.
         return user_normalized_value <= (feature_definition.rollout_percentage / 100)
 
-
-    # Could not find a segment where it is enabled or disabled, return False.
+    # Could not find a criteria where it is enabled, return False.
     return False
 
 def _user_matches_segment(user_attributes:typing.Dict, segment_definition:SegmentDefinition)->bool:
