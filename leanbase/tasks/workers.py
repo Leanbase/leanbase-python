@@ -2,6 +2,7 @@ import logging
 import threading
 from six.moves import queue
 
+from leanbase import constants
 from leanbase.storage import SegmentStore, FeatureStore
 from leanbase.client import lbconvey, sse
 from leanbase.models.config import LBClientConfig
@@ -79,7 +80,7 @@ class SegmentSyncWorker(object):
         self._should_stop = True
 
     def initialize(self):
-        self._update_segment('$STAFF')
+        self._update_segment(constants.STAFF_SEGMENT_INTERNAL_ID)
         logging.info('Populated staff segment definition')
         self._init_event.set()
         self.main_loop()
@@ -98,11 +99,13 @@ class SegmentSyncWorker(object):
         logging.info('Thread<%s> Stopped', threading.currentThread().getName())
 
     def _update_segment(self, segment_id:str=None):
-        self.segment_store.set_segment(
-            segment_id,
-            lbconvey.get_staff_segment_definition(self.config.team_id)
-        )
-        logging.debug('Updated segment definition for id: %s', segment_id)
+        if segment_id == constants.STAFF_SEGMENT_INTERNAL_ID:
+            self.segment_store.set_segment(
+                segment_id,
+                lbconvey.get_staff_segment_definition(self.config.team_id)
+            )
+            logging.debug('Updated segment definition for id: %s', segment_id)
+        # TODO: fetch non-staff segments
 
 class ConveyEventsWorker(object):
     def __init__(self, config:LBClientConfig):
