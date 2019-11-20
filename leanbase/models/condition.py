@@ -86,7 +86,7 @@ class Condition(object):
         if kind == Kinds.BOOLEAN:
             value = value in TRUISH
         elif kind == Kinds.NUMERIC:
-            value == float(value)
+            value = float(value)
             if abs(value) - math.floor(abs(value))  < FLOAT_TOLERANCE:
                 value = int(value)
         elif kind == Kinds.DATE:
