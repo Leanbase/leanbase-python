@@ -33,7 +33,7 @@ def get_feature_status(team_id:str, feature_id:str)->FeatureDefinition:
     if response:
         return FeatureDefinition.from_encoding(
             gs=response.get('gs'),
-            _id=response.get('id'),
+            id=response.get('id'),
             es=response.get('es', []),
             ss=response.get('ss', [])
         )
