@@ -33,6 +33,15 @@ class LBClient(object):
         self._engage()
         self._await_initialization()
 
+    def get_config(self):
+        return self._config
+
+    def get_feature_store(self):
+        return self._feature_store
+
+    def get_segment_store(self):
+        return self._segment_store
+
     def _await_initialization(self):
         # If all ready_states are fulfilled, set the ready_event.
         client = self

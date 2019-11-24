@@ -2,6 +2,7 @@ from collections import namedtuple
 from leanbase import exceptions
 
 _config_keys = [
+    'user_token_secret',
     'api_key',
     'convey_host',
     'team_id',

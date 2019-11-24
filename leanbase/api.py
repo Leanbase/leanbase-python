@@ -53,4 +53,4 @@ def user(user_attributes:typing.Dict):
     if not _client:
         raise exceptions.NotConfiguredException
 
-    return User(user_attributes, _client._feature_store, _client._segment_store)
+    return User(user_attributes, _client)
