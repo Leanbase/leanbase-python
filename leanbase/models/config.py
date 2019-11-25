@@ -16,7 +16,7 @@ class _LBClientConfig(object):
             raise exceptions.BadConfigurationException('api_key cannot be None')
 
         # First, we set the defaults
-        self.convey_host = 'https://convey.leanbase.io/'
+        self.convey_host = 'https://api.leanbase.io/'
 
         # Now, if any overrides have been passed, we override them.
         for (k, v) in kwargs.items():
